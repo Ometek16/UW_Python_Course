@@ -7,3 +7,4 @@
 ## Project_2
 	1. randomRevesedList
 	2. temperature
+	3. sumIntegersFromList
