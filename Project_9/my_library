@@ -1,0 +1,35 @@
+{
+    "books": [
+        {
+            "title": "The Great Gatsby",
+            "creator": "F. Scott Fitzgerald",
+            "year": 1925,
+            "genre": "Classic",
+            "isbn": "978-3-16-148410-0"
+        }
+    ],
+    "movies": [
+        {
+            "title": "Inception",
+            "creator": "Christopher Nolan",
+            "year": 2010,
+            "genre": "Sci-Fi",
+            "duration": 148
+        },
+        {
+            "title": "Interstellar",
+            "creator": "Christopher Nolan",
+            "year": 2014,
+            "genre": "Sci-Fi",
+            "duration": 169
+        },
+        {
+            "title": "Shutter Island",
+            "creator": "Martin Scorsese",
+            "year": 2010,
+            "genre": "Mystery",
+            "duration": 138
+        }
+    ],
+    "items": []
+}

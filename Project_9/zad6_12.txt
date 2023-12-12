@@ -1,0 +1,93 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Dec  5 13:41:53 2023
+
+@author: Marcin
+"""
+
+# Opis:
+
+# Stwórz system do obsługi danych dotyczących książek i filmów w bibliotece. 
+# System powinien wykorzystywać koncepcję klas, dziedziczenia i umożliwiać 
+# zapisywanie informacji do pliku JSON.
+
+# Klasy:
+
+#     Item (Klasa Abstrakcyjna):
+#         Atrybuty: title (tytuł), creator (twórca), year (rok wydania).
+#         Metody: display_info (metoda abstrakcyjna do wyświetlania informacji o przedmiocie).
+
+#     Book (Dziedziczy po Item):
+#         Dodatkowe atrybuty: genre (gatunek), isbn (numer ISBN).
+#         Implementuje metodę display_info.
+
+#     Movie (Dziedziczy po Item):
+#         Dodatkowe atrybuty: genre (gatunek), duration (czas trwania w minutach).
+#         Implementuje metodę display_info.
+
+#     Library:
+#         Atrybut: items (lista przedmiotów).
+#         Metody:
+#             add_item(item) - dodawanie przedmiotu do biblioteki,
+#             display_items() - wyświetlanie informacji o przedmiotach,
+#             save_to_file(filename) - zapisywanie informacji do pliku JSON,
+#             load_from_file(filename) - wczytywanie informacji z pliku JSON.
+
+# No i na koniec Państwa inwencja twórcza. Proszę zaimplementować funkcję, która dokona
+# rekomendacji - np. User chce, aby pokazło mu podobne filmy do movie1 po gatunku.
+# Powinno pokazać movie2 (jako Sci-Fi).  
+
+# movie1 = Movie("Inception", "Christopher Nolan", 2010, "Sci-Fi", 148)
+# movie2 = Movie("Interstellar", "Christopher Nolan", 2014, "Sci-Fi", 169)
+# movie3 = Movie("Shutter Island", "Martin Scorsese", 2010, "Mystery", 138)
+
+
+# Utwórz bibliotekę, dodaj książki i filmy
+library = Library()
+
+book = Book("The Great Gatsby", "F. Scott Fitzgerald", 1925, "Classic", "978-3-16-148410-0")
+movie = Movie("Inception", "Christopher Nolan", 2010, "Sci-Fi", 148)
+
+library.add_item(book)
+library.add_item(movie)
+
+# Wyświetl informacje o przedmiotach w bibliotece
+library.display_items()
+
+# OUT:
+# Title: The Great Gatsby
+# Creator: F. Scott Fitzgerald
+# Year: 1925
+# Genre: Classic
+# ISBN: 978-3-16-148410-0
+
+# Title: Inception
+# Creator: Christopher Nolan
+# Year: 2010
+# Genre: Sci-Fi
+# Duration: 148 minutes
+
+# # Zapisz informacje do pliku i wczytaj z powrotem
+# library.save_to_file("library_data.json")
+
+# new_library = Library()
+# new_library.load_from_file("library_data.json")
+
+# # Wyświetl informacje o przedmiotach w nowej bibliotece
+# new_library.display_items()
+
+# # Zawartosć pliku:
+# Title: The Great Gatsby
+# Creator: F. Scott Fitzgerald
+# Year: 1925
+# Genre: Classic
+# ISBN: 978-3-16-148410-0
+
+# Title: Inception
+# Creator: Christopher Nolan
+# Year: 2010
+# Genre: Sci-Fi
+# Duration: 148 minutes
+
+
+

@@ -1,0 +1,18 @@
+With __slots__
+real 3.86
+           312688640  maximum resident set size
+real 3.84
+           312803328  maximum resident set size
+real 3.85
+           304168960  maximum resident set size
+real 3.86
+           304152576  maximum resident set size
+Without __slots__
+real 3.62
+           248365056  maximum resident set size
+real 3.62
+           239943680  maximum resident set size
+real 3.63
+           248365056  maximum resident set size
+real 3.62
+           248315904  maximum resident set size
