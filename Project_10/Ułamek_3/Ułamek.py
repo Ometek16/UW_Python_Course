@@ -57,9 +57,3 @@ class Ułamek():
         with open(file_path, 'r') as file:
             data = file.read().split("/")
             return cls(int(data[0]), int(data[1]))
-
-a = Ułamek(1, 2)
-a.save_to_file("my_test")
-
-b = Ułamek.read_from_file("my_test")
-print(b)
