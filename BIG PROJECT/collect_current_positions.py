@@ -26,9 +26,11 @@ os.mkdir(new_folder_path)
 
 
 # Collect data
-for i in range(10):
+for i in range(720):
 	# Get data from UM API
 	response = requests.get(url, params=params).json()
+
+	print(f"Collected {i + 1} out of 720 data sets.")
 
 	# Save to file
 	path = os.path.join(new_folder_path, f'{i}.json')
