@@ -10,7 +10,7 @@ url = 'https://api.um.warszawa.pl/api/action/busestrams_get/' # URL for UM API
 params = {
     'resource_id': 'f2e5503e-927d-4ad3-9500-4ab9e55deb59',
     'type':	'1',
-	'apikey': api_key
+    'apikey': api_key
 }
 
 # Directory path
@@ -26,15 +26,22 @@ os.mkdir(new_folder_path)
 
 
 # Collect data
-for i in range(720):
-	# Get data from UM API
-	response = requests.get(url, params=params).json()
+for i in range(1000):
+    error_count = 0
+    # Get data from UM API
+    while (response := requests.get(url, params=params).json()):
+        if (response['result'][0] != 'B'):
+            break
+        else:
+            print("[ERROR] Could not get data from UM API.")
+            error_count += 1
+            time.sleep(0.3);
 
-	print(f"Collected {i + 1} out of 720 data sets.")
+    print(f"Collected {i + 1} out of 1000 data sets. || error_count: {error_count}")
 
-	# Save to file
-	path = os.path.join(new_folder_path, f'{i}.json')
-	with open(path, 'w') as file:
-		json.dump(response, file)
-	
-	time.sleep(10)
+    # Save to file
+    path = os.path.join(new_folder_path, f'{i}.json')
+    with open(path, 'w') as file:
+        json.dump(response, file)
+    
+    time.sleep(10)

@@ -1,0 +1,55 @@
+import geopandas as gpd
+import os
+import matplotlib.pyplot as plt
+from shapely.geometry import Point, LineString
+from alive_progress import alive_it
+from tools import bcolors
+
+SPEED_LIMIT = 50
+
+def plot_data_set_speed(dataSet: int = 1) -> None:
+	all_segments = open(os.path.join("DATA_SETS", f"filtered_segments_{dataSet}.csv"), "r").readlines()[1:]
+	speeding_segments_in_warsaw = []
+	district_counter = dict()
+	district_speeding_counter = dict()
+
+	for segment in alive_it(all_segments, title=bcolors.OKCYAN+ "Filtering segments..." + bcolors.ENDC):
+		segment = segment.split(",")
+		start_position = (float(segment[0]), float(segment[1]))
+		end_position = (float(segment[3]), float(segment[4]))
+
+		district_counter[segment[2]] = district_counter.get(segment[2], 0) + 1
+		district_counter[segment[5]] = district_counter.get(segment[5], 0) + 1	
+
+		# If the bus was speeding but did not magically teleport 
+		if 150 > float(segment[6]) > 50:
+			speeding_segments_in_warsaw.append((start_position, end_position))
+			district_speeding_counter[segment[2]] = district_speeding_counter.get(segment[2], 0) + 1
+			district_speeding_counter[segment[5]] = district_speeding_counter.get(segment[5], 0) + 1
+
+
+	speeding_percentage = dict()
+
+	for district in district_counter:
+		if district in district_speeding_counter:
+			speeding_percentage[district] = district_speeding_counter[district] / district_counter[district] * 100
+
+	print(speeding_percentage)
+
+	speeding_lines_gdf = gpd.GeoDataFrame(geometry=[LineString([line[0], line[1]]) for line in speeding_segments_in_warsaw])
+	speeding_lines_gdf = speeding_lines_gdf.set_crs(epsg=4326)
+
+
+	# Load the Warsaw districts GeoJSON file
+	warsaw_gdf = gpd.read_file('warszawa-dzielnice.geojson')
+ 
+	# plot the map
+	mapa = warsaw_gdf.plot(figsize=(10, 10), edgecolor='black', linewidth=0.5, color=warsaw_gdf["color"], legend=True)	
+	mapa.set_title('Miejsca w Warszawie, w których autobusy\n przekraczały prędkość 50 km/h', fontdict={'fontsize': 15, 'fontweight': 'medium'})
+
+	# Plot the speeding lines
+	print(bcolors.OKCYAN + "Plotting..." + bcolors.ENDC)
+	speeding_lines_gdf.plot(ax=mapa, color='red')
+
+	plt.show()
+ 
