@@ -11,7 +11,7 @@ if len(parameters) > 1 or (len(parameters) == 1 and not parameters[0].isdigit())
 	print(bcolors.FAIL + "Error: Too many arguments provided. Please provide at most one integer argument." + bcolors.ENDC)
 	sys.exit(1)
 
-DataSetId = parameters[0] if parameters else 1
+DataSetId = int(parameters[0]) if parameters else 1
 
 # Check if the DATA_SET_{DataSetId} file exists
 data_set_file = os.path.join("DATA_SETS", f"DATA_SET_{DataSetId}")
