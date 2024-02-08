@@ -2,7 +2,7 @@ import requests
 import json
 import time
 import os
-from tools import bcolors
+from tools import bcolors, force_response
 import sys
 from alive_progress import alive_it
 
@@ -41,26 +41,8 @@ for i in alive_it(range(dataSize), title=bcolors.OKCYAN + "Downloading data from
     if (i != 0):
         time.sleep(10)
     
-    error_count = 0
-    error_message = ""
-
     # Get data from UM API
-    while (response := requests.get(url, params=params).json()):
-        if response['result'][0] == 'B':
-            error_count += 1
-            
-            if (error_message == ""):
-                print(bcolors.WARNING + "[ERROR]" + bcolors.ENDC)
-                
-            error_message = f"[ERROR] Could not get data from UM API. ({error_count})"
-            print("\033[F" + "\033[C" * (5 + len(str(i))) + bcolors.WARNING + error_message + bcolors.ENDC)
-            time.sleep(0.1)
-        else:
-            break
-
-    if (error_count > 0):
-        print("\033[F" + "\033[C" * (5 + len(str(i))) + bcolors.WARNING + error_message + bcolors.OKGREEN + " [OK]" + bcolors.ENDC)
-
+    response = force_response(url, params, i)
     # Save to file
     path = os.path.join(new_folder_path, f'{i}.json')
     with open(path, 'w') as file:

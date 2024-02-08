@@ -1,7 +1,7 @@
 import sys
 import os
 from tools import bcolors
-from filter_segments import filter_and_save_segments
+from filter_data import filter_and_save_data
 from plot_data_set_speed import plot_data_set_speed
 
 parameters = sys.argv[1:]
@@ -19,5 +19,5 @@ if not os.path.exists(data_set_file):
 	print(bcolors.FAIL + f"Error: {data_set_file} does not exist." + bcolors.ENDC)
 	sys.exit(1)
 
-filter_and_save_segments(DataSetId)
+filter_and_save_data(DataSetId)
 plot_data_set_speed(DataSetId)

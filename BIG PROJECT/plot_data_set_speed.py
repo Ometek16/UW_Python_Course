@@ -10,7 +10,7 @@ import numpy as np
 SPEED_LIMIT = 50
 
 def plot_data_set_speed(dataSet: int = 1) -> None:
-    all_segments = open(os.path.join("DATA_SETS", f"filtered_segments_{dataSet}.csv"), "r").readlines()[1:]
+    all_segments = open(os.path.join("FILTERED_DATA", "FILTERED_SEGMENTS", f"filtered_segments_{dataSet}.csv"), "r").readlines()[1:]
     speeding_segments_in_warsaw = []
     district_counter = dict()
     district_speeding_counter = dict()
@@ -23,8 +23,8 @@ def plot_data_set_speed(dataSet: int = 1) -> None:
         district_counter[segment[2]] = district_counter.get(segment[2], 0) + 1
         district_counter[segment[5]] = district_counter.get(segment[5], 0) + 1	
 
-        # If the bus was speeding but did not magically teleport 
-        if 150 > float(segment[6]) > 50:
+        # If the bus was speeding but did not magically teleport (apparently the buses cant go faster than 90 km/h)
+        if 50 < float(segment[6]) < 90:
             speeding_segments_in_warsaw.append((start_position, end_position))
             district_speeding_counter[segment[2]] = district_speeding_counter.get(segment[2], 0) + 1
             district_speeding_counter[segment[5]] = district_speeding_counter.get(segment[5], 0) + 1
