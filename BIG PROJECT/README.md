@@ -16,8 +16,8 @@ All results are district-focused.
 # Sample code
 
 ```python
-from collect import collect_all
-from analyse import analyse_all
+from BusProjectUW_KO import collect_all
+from BusProjectUW_KO import analyse_all
 
 api_key = "your_api_key"  # API key for UM API
 path = os.getcwd()
@@ -27,8 +27,8 @@ analyse_all(path, dataSet)
 ```
 
 ```python
-from collect_current_positions import collect_current_positions
-from analyse import analyse_all
+from BusProjectUW_KO import collect_current_positions
+from BusProjectUW_KO import analyse_all
 
 api_key = "your_api_key"  # API key for UM API
 path = os.getcwd()
