@@ -76,11 +76,11 @@ def force_response(url: str, params: Dict, i: Union[int, None], timeout: int = 1
     return response
 
 
-def check_params(DataSetId: int) -> int:
+def check_params(path: str, DataSetId: int) -> int:
     '''Checks if DataSetId is valid'''
 
     # Check if the DATA_SET_{DataSetId} file exists
-    data_set_file = os.path.join("DATA_SETS", f"DATA_SET_{DataSetId}")
+    data_set_file = os.path.join(path, "DATA_SETS", f"DATA_SET_{DataSetId}")
     if not os.path.exists(data_set_file):
         print(bcolors.FAIL + f"Error: {data_set_file} does not exist." + bcolors.ENDC)
         sys.exit(1)

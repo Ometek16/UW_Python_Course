@@ -16,13 +16,13 @@ def get_info(info):
     return good_info
 
 
-def get_schedule(api_key: str, line: int) -> None:
+def get_schedule(path: str, api_key: str, line: int) -> None:
     '''Collects bus schedule of a set line data from UM API and saves it to a file.'''
 
     api_key = "c7fc874d-fcff-4480-8671-f452e945b35a"  # API key for UM API
     url = 'https://api.um.warszawa.pl/api/action/dbtimetable_get'  # URL for UM API
-    public_transport_routes = './SCHEDULE/public_transport_routes.json'
-    main_directory = './SCHEDULE/LINES'
+    public_transport_routes = os.path.join(path, 'SCHEDULE/public_transport_routes.json')
+    main_directory = os.path.join(path, 'SCHEDULE/LINES')
     os.makedirs(main_directory, exist_ok=True)
 
     my_line_data = dict()
@@ -66,16 +66,16 @@ def get_schedule(api_key: str, line: int) -> None:
         json.dump(my_line_data, file)
 
 
-def collect_schedule(api_key: str) -> None:
+def collect_schedule(path: str, api_key: str) -> None:
     '''Collects bus schedule for all lines data from UM API and saves it to a file.'''
 
     print(bcolors.HEADER + "Collecting schedule..." + bcolors.ENDC)
     print(bcolors.HEADER + "This process might take around 5-6 hours to fully complete." + bcolors.ENDC)
-    with open('./SCHEDULE/public_transport_routes.json', 'r') as file:
+    with open(os.path.join(path, 'SCHEDULE/public_transport_routes.json'), 'r') as file:
         data = json.load(file)
         lines = list(data['result'].keys())
 
         # Collect data for each line
         for i in range(len(lines)):
-            get_schedule(api_key, lines[i])
+            get_schedule(path, api_key, lines[i])
             print(bcolors.OKGREEN + "[SUCCESS] Collected ", str((i + 1)) + " out of " + str(len(lines)) + " line schedules." + bcolors.ENDC)

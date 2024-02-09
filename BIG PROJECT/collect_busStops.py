@@ -15,7 +15,7 @@ def get_info(info: List[Dict]) -> Dict:
     return good_info
 
 
-def collect_busStops(api_key: str) -> None:
+def collect_busStops(path: str, api_key: str) -> None:
     '''Collects bus stops data from UM API and saves it to a file'''
 
     print(bcolors.HEADER + "Collecting bus Stops..." + bcolors.ENDC)
@@ -40,5 +40,5 @@ def collect_busStops(api_key: str) -> None:
         busStops[key] = info
 
     # Save to file
-    with open(os.path.join('./SCHEDULE', 'busStops.json'), 'w') as file:
+    with open(os.path.join(path, 'SCHEDULE', 'busStops.json'), 'w') as file:
         json.dump(busStops, file)

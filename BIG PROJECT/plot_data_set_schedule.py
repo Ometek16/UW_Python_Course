@@ -5,6 +5,7 @@ from alive_progress import alive_it
 from tools import bcolors
 import json
 import warnings
+import os
 from typing import Dict, Union, List, Tuple, Type
 
 
@@ -43,14 +44,14 @@ def prepare_plot(ax: Type[Axes], pos: Tuple[int, int], name: str, idx: int, data
         warnings.filterwarnings("default")
 
 
-def plot_data_set_schedule(dataSet: int = 1, show: bool = False) -> None:
+def plot_data_set_schedule(path: str, dataSet: int = 1, show: bool = False) -> None:
     '''Plots the percentage of buses in each district of Warsaw that are delayed by a certain amount of time.'''
 
     # Colors for the plots
     colors = ["blue", "green", "red", "cyan", "magenta", "yellow", "blueviolet", "hotpink", "orange", "coral", "mediumspringgreen", "royalblue", "orangered", "lime", "khaki", "turquoise", "darkorange", "aquamarine", "dodgerblue"]
 
     # Load the filtered positions from the file
-    with open(f"./FILTERED_DATA/FILTERED_POSITIONS/filtered_positions_{dataSet}.json", "r") as file:
+    with open(os.path.join(path, f"./FILTERED_DATA/FILTERED_POSITIONS/filtered_positions_{dataSet}.json"), "r") as file:
         data = json.load(file)
 
     # Calculate the time differences between the scheduled and actual bus times
@@ -89,6 +90,7 @@ def plot_data_set_schedule(dataSet: int = 1, show: bool = False) -> None:
     prepare_plot(ax, (2, 2), "Procent autobusów wg dzielnic", None, district_counter, colors, False)
 
     plt.get_current_fig_manager().full_screen_toggle()
-    plt.savefig(f"./PLOTS/schedule_plot_{dataSet}.png")
+    plt.savefig(os.path.join(path, f"./PLOTS/schedule_plot_{dataSet}.png"))
+
     if (show):
         plt.show()

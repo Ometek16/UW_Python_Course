@@ -3,7 +3,7 @@ import json
 import os
 
 
-def collect_public_transport_routes(api_key: str) -> None:
+def collect_public_transport_routes(path: str, api_key: str) -> None:
     '''Collects public transport routes data from UM API and saves it to a file'''
 
     print(bcolors.HEADER + "Collecting public transport routes..." + bcolors.ENDC)
@@ -18,5 +18,5 @@ def collect_public_transport_routes(api_key: str) -> None:
     response = force_response(url, params, None)
 
     # Save to file
-    with open(os.path.join('./SCHEDULE', 'public_transport_routes.json'), 'w') as file:
+    with open(os.path.join(path, 'SCHEDULE', 'public_transport_routes.json'), 'w') as file:
         json.dump(response, file)

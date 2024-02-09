@@ -3,7 +3,7 @@ import os
 from tools import force_response, bcolors
 
 
-def collect_dictionary(api_key: str) -> None:
+def collect_dictionary(path: str, api_key: str) -> None:
     '''Collects dictionary data from UM API and saves it to a file'''
 
     print(bcolors.HEADER + "Collecting dictionary..." + bcolors.ENDC)
@@ -18,5 +18,5 @@ def collect_dictionary(api_key: str) -> None:
     response = force_response(url, params, None)
 
     # Save to file
-    with open(os.path.join('./SCHEDULE', 'dictionary.json'), 'w') as file:
+    with open(os.path.join(path, 'SCHEDULE', 'dictionary.json'), 'w') as file:
         json.dump(response, file)

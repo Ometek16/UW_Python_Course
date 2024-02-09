@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime
 from tools import calculate_distance, bcolors
 from alive_progress import alive_it
@@ -7,16 +8,16 @@ from alive_progress import alive_it
 DELTA_DISTANCE = 50
 
 
-def filter_positions(dataSet: int = 1) -> None:
+def filter_positions(path: str, dataSet: int = 1) -> None:
     '''Filter positions of buses which are around bus stops.'''
 
     # Load bus stops
-    file_busStops = "SCHEDULE/busStops.json"
+    file_busStops = os.path.join(path, "SCHEDULE/busStops.json")
     with open(file_busStops, 'r') as file:
         busStops = json.load(file)
 
     # Load valid positions
-    file_path = f"./FILTERED_DATA/VALID_POSITIONS/valid_positions_{dataSet}.json"
+    file_path = os.path.join(path, f"FILTERED_DATA/VALID_POSITIONS/valid_positions_{dataSet}.json")
     with open(file_path, 'r') as file:
         valid_positions = json.load(file)
 
@@ -26,7 +27,7 @@ def filter_positions(dataSet: int = 1) -> None:
     for bus in alive_it(valid_positions, title=bcolors.OKCYAN + "Filering positions..." + bcolors.ENDC, spinner='dots'):
         # Load bus possible positions (some lines do not exist in the schedule, so we need to handle this case)
         try:
-            file_bus_positions = f"SCHEDULE/LINES/line_{bus["Line"]}.json"
+            file_bus_positions = os.path.join(path, f"SCHEDULE/LINES/line_{bus["Line"]}.json")
             with open(file_bus_positions, 'r') as file:
                 bus_positions = json.load(file)
         except Exception:
@@ -74,5 +75,5 @@ def filter_positions(dataSet: int = 1) -> None:
 
     # Save the filtered positions
     print(bcolors.OKBLUE + "Saving data..." + bcolors.ENDC)
-    with open(f"./FILTERED_DATA/FILTERED_POSITIONS/filtered_positions_{dataSet}.json", "w") as file:
+    with open(os.path.join(path, f"FILTERED_DATA/FILTERED_POSITIONS/filtered_positions_{dataSet}.json"), "w") as file:
         json.dump(filtered_positions, file)

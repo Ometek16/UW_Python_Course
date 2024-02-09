@@ -5,7 +5,7 @@ from tools import bcolors, force_response
 from alive_progress import alive_it
 
 
-def collect_current_positions(api_key: str, dataSize: int = 100) -> int:
+def collect_current_positions(path: str, api_key: str, dataSize: int = 100) -> int:
     '''Collects current positions of buses from UM API.'''
 
     print(bcolors.HEADER + "Collecting current positions..." + bcolors.ENDC)
@@ -19,7 +19,7 @@ def collect_current_positions(api_key: str, dataSize: int = 100) -> int:
     }
 
     # Directory path
-    directory = './DATA_SETS'
+    directory = os.path.join(path, 'DATA_SETS')
 
     if not os.path.exists(directory):
         os.mkdir(directory)

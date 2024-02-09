@@ -10,11 +10,11 @@ SPEED_LIMIT = 50
 SPEED_TELEPORT = 90
 
 
-def plot_data_set_speed(dataSet: int = 1, show: bool = False) -> None:
+def plot_data_set_speed(path: str, dataSet: int = 1, show: bool = False) -> None:
     '''Plots the percentage of speeding buses in each district of Warsaw.'''
 
     # Read the filtered segments from the file
-    all_segments = open(os.path.join("FILTERED_DATA", "FILTERED_SEGMENTS", f"filtered_segments_{dataSet}.csv"), "r").readlines()[1:]
+    all_segments = open(os.path.join(path, "FILTERED_DATA", "FILTERED_SEGMENTS", f"filtered_segments_{dataSet}.csv"), "r").readlines()[1:]
     speeding_segments_in_warsaw = []
     district_counter = dict()
     district_speeding_counter = dict()
@@ -66,6 +66,7 @@ def plot_data_set_speed(dataSet: int = 1, show: bool = False) -> None:
     plt.get_current_fig_manager().full_screen_toggle()
     speeding_lines_gdf.plot(ax=mapa, color='red')
 
-    plt.savefig(f"./PLOTS/speed_plot_{dataSet}.png")
+    plt.savefig(os.path.join(path, f"PLOTS/speed_plot_{dataSet}.png"))
+
     if (show):
         plt.show()

@@ -61,12 +61,12 @@ def get_important_data(raw_data: List[Dict]) -> Dict:
     return data
 
 
-def filter_and_save_data(dataSet: int = 1) -> None:
+def filter_and_save_data(path: str, dataSet: int = 1) -> None:
     '''Filters the data and saves it to a file.'''
 
     # Open the file to save the segments
-    data_path = os.path.join("DATA_SETS", f"DATA_SET_{dataSet}")
-    segments_file = open(os.path.join("FILTERED_DATA", "FILTERED_SEGMENTS", f"filtered_segments_{dataSet}.csv"), "w")
+    data_path = os.path.join(path, "DATA_SETS", f"DATA_SET_{dataSet}")
+    segments_file = open(os.path.join(path, "FILTERED_DATA", "FILTERED_SEGMENTS", f"filtered_segments_{dataSet}.csv"), "w")
     segments_file.write("start_lon,start_lat,start_district,end_lon,end_lat,end_district,velocity,line\n")
 
     # Count the number of files
@@ -151,5 +151,5 @@ def filter_and_save_data(dataSet: int = 1) -> None:
 
     # Save the valid positions
     print(bcolors.OKBLUE + "Saving data..." + bcolors.ENDC)
-    with open(os.path.join("FILTERED_DATA", "VALID_POSITIONS", f"valid_positions_{dataSet}.json"), "w") as file:
+    with open(os.path.join(path, "FILTERED_DATA", "VALID_POSITIONS", f"valid_positions_{dataSet}.json"), "w") as file:
         json.dump(valid_positions, file)
