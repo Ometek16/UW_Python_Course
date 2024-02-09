@@ -1,19 +1,22 @@
-import requests
+from tools import force_response, bcolors
 import json
 import os
 
 
-api_key = "c7fc874d-fcff-4480-8671-f452e945b35a"  # API key for UM API
-url = 'https://api.um.warszawa.pl/api/action/public_transport_routes/'  # URL for UM API
+def collect_public_transport_routes(api_key: str) -> None:
+    '''Collects public transport routes data from UM API and saves it to a file'''
 
-# Parameters for UM API
-params = {
-    'apikey': api_key
-}
+    print(bcolors.HEADER + "Collecting public transport routes..." + bcolors.ENDC)
+    url = 'https://api.um.warszawa.pl/api/action/public_transport_routes/'  # URL for UM API
 
-# Get data from UM API
-response = requests.get(url, params=params).json()
+    # Parameters for UM API
+    params = {
+        'apikey': api_key
+    }
 
-# Save to file
-with open(os.path.join('./SCHEDULE', 'public_transport_routes.json'), 'w') as file:
-    json.dump(response, file)
+    # Get data from UM API
+    response = force_response(url, params, None)
+
+    # Save to file
+    with open(os.path.join('./SCHEDULE', 'public_transport_routes.json'), 'w') as file:
+        json.dump(response, file)

@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Tuple, NewType, Dict, List
+from typing import Tuple, NewType, Dict, List, Union
 import requests
 import time
 import sys
@@ -29,7 +29,7 @@ def calculate_distance(point_A: Coordinates, point_B: Coordinates) -> float:
     return EARTH_RADIUS * c
 
 
-def force_response(url: str, params: Dict, i: int, timeout: int = 100, allowFail: bool = False) -> Dict:
+def force_response(url: str, params: Dict, i: Union[int, None], timeout: int = 100, allowFail: bool = False) -> Dict:
     '''Forces response from UM API.
     If the response is empty, it retries until it gets a response.
     If it fails, it returns an empty response.
@@ -39,6 +39,7 @@ def force_response(url: str, params: Dict, i: int, timeout: int = 100, allowFail
     error_count = 0
     error_message = ""
     response = {"result": []}
+    SHIFT = bcolors.MOVE_RIGHT * (5 + len(str(i))) if i is not None else ""
 
     # Get data from UM API
     while (True):
@@ -49,7 +50,7 @@ def force_response(url: str, params: Dict, i: int, timeout: int = 100, allowFail
             error_count += 1
 
         # Check if the response is empty or if it is a bad response
-        if len(response['result']) == 0 or response['result'][0] == 'B':
+        if len(response['result']) == 0 or (isinstance(response['result'], str) and response['result'][0] == 'B'):
             error_count += 1
 
             if (error_message == "" and not allowFail):
@@ -57,7 +58,7 @@ def force_response(url: str, params: Dict, i: int, timeout: int = 100, allowFail
 
             error_message = f"[ERROR] Could not get data from UM API. ({error_count})"
             if (not allowFail):
-                print(bcolors.PREV_LINE + bcolors.MOVE_RIGHT * (5 + len(str(i))) + bcolors.WARNING + error_message + bcolors.ENDC)
+                print(bcolors.PREV_LINE + SHIFT + bcolors.WARNING + error_message + bcolors.ENDC)
             time.sleep(0.1)
         else:  # Success
             break
@@ -65,33 +66,24 @@ def force_response(url: str, params: Dict, i: int, timeout: int = 100, allowFail
         # Timeout
         if (error_count >= timeout):
             if (not allowFail):
-                print(bcolors.PREV_LINE + bcolors.MOVE_RIGHT * (5 + len(str(i))) + bcolors.FAIL + "[FAIL] Could not get data from UM API." + " " * 20 + bcolors.ENDC)
+                print(bcolors.PREV_LINE + SHIFT + bcolors.FAIL + "[FAIL] Could not get data from UM API." + " " * 20 + bcolors.ENDC)
             return response
 
     # Change the error message to success message
     if (error_message != "" and not allowFail):
-        print(bcolors.PREV_LINE + bcolors.MOVE_RIGHT * (5 + len(str(i))) + bcolors.WARNING + error_message + bcolors.OKGREEN + " [OK]" + bcolors.ENDC)
+        print(bcolors.PREV_LINE + SHIFT + bcolors.WARNING + error_message + bcolors.OKGREEN + " [OK]" + bcolors.ENDC)
 
     return response
 
 
-def check_params(params: List) -> int:
-    '''Checks if the parameters are correct and returns DataSetId.'''
-
-    # Check if there is at most one argument and call it DataSetId
-    if len(params) > 1 or (len(params) == 1 and not params[0].isdigit()):
-        print(bcolors.FAIL + "Error: Too many arguments provided. Please provide at most one integer argument." + bcolors.ENDC)
-        sys.exit(1)
-
-    DataSetId = int(params[0]) if params else 1
+def check_params(DataSetId: int) -> int:
+    '''Checks if DataSetId is valid'''
 
     # Check if the DATA_SET_{DataSetId} file exists
     data_set_file = os.path.join("DATA_SETS", f"DATA_SET_{DataSetId}")
     if not os.path.exists(data_set_file):
         print(bcolors.FAIL + f"Error: {data_set_file} does not exist." + bcolors.ENDC)
         sys.exit(1)
-
-    return DataSetId
 
 
 class bcolors:

@@ -10,7 +10,7 @@ SPEED_LIMIT = 50
 SPEED_TELEPORT = 90
 
 
-def plot_data_set_speed(dataSet: int = 1) -> None:
+def plot_data_set_speed(dataSet: int = 1, show: bool = False) -> None:
     '''Plots the percentage of speeding buses in each district of Warsaw.'''
 
     # Read the filtered segments from the file
@@ -67,4 +67,5 @@ def plot_data_set_speed(dataSet: int = 1) -> None:
     speeding_lines_gdf.plot(ax=mapa, color='red')
 
     plt.savefig(f"./PLOTS/speed_plot_{dataSet}.png")
-    # plt.show()
+    if (show):
+        plt.show()

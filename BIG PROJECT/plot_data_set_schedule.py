@@ -8,7 +8,7 @@ import warnings
 from typing import Dict, Union, List, Tuple, Type
 
 
-def prepare_plot(ax: Type[Axes], pos: Tuple[int, int], name: str, idx: int, data: Dict[int:int], color: Union[str, List[str]], xaxis_defalut: bool = True):
+def prepare_plot(ax: Type[Axes], pos: Tuple[int, int], name: str, idx: int, data: Dict[int, int], color: Union[str, List[str]], xaxis_defalut: bool = True):
     '''Prepares the plot for the schedule plot. Can plot a single district or the summary data.'''
 
     total_count = sum(data.values())
@@ -43,7 +43,7 @@ def prepare_plot(ax: Type[Axes], pos: Tuple[int, int], name: str, idx: int, data
         warnings.filterwarnings("default")
 
 
-def plot_data_set_schedule(dataSet: int = 1) -> None:
+def plot_data_set_schedule(dataSet: int = 1, show: bool = False) -> None:
     '''Plots the percentage of buses in each district of Warsaw that are delayed by a certain amount of time.'''
 
     # Colors for the plots
@@ -90,4 +90,5 @@ def plot_data_set_schedule(dataSet: int = 1) -> None:
 
     plt.get_current_fig_manager().full_screen_toggle()
     plt.savefig(f"./PLOTS/schedule_plot_{dataSet}.png")
-    # plt.show()
+    if (show):
+        plt.show()
