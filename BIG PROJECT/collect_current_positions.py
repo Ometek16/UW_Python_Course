@@ -1,22 +1,22 @@
-import requests
-import json
-import time
 import os
-from tools import bcolors, force_response
 import sys
+import time
+import json
+from tools import bcolors, force_response
 from alive_progress import alive_it
+
 
 parameters = sys.argv[1:]
 
 # Check if there is at most one argument and call it DataSetId
 if len(parameters) > 1 or (len(parameters) == 1 and not parameters[0].isdigit()):
-	print(bcolors.FAIL + "Error: Too many arguments provided. Please provide at most one integer argument." + bcolors.ENDC)
-	sys.exit(1)
+    print(bcolors.FAIL + "Error: Too many arguments provided. Please provide at most one integer argument." + bcolors.ENDC)
+    sys.exit(1)
 
 dataSize = int(parameters[0]) if parameters else 100
 
 api_key = "c7fc874d-fcff-4480-8671-f452e945b35a"  # API key for UM API
-url = 'https://api.um.warszawa.pl/api/action/busestrams_get/' # URL for UM API
+url = 'https://api.um.warszawa.pl/api/action/busestrams_get/'  # URL for UM API
 
 # Parameters for UM API
 params = {
@@ -40,9 +40,10 @@ os.mkdir(new_folder_path)
 for i in alive_it(range(dataSize), title=bcolors.OKCYAN + "Downloading data from API..." + bcolors.ENDC, spinner='dots'):
     if (i != 0):
         time.sleep(10)
-    
+
     # Get data from UM API
     response = force_response(url, params, i)
+
     # Save to file
     path = os.path.join(new_folder_path, f'{i}.json')
     with open(path, 'w') as file:

@@ -1,76 +1,93 @@
-import geopandas as gpd
-import os
 import matplotlib.pyplot as plt
-import matplotlib as mpl
-from shapely.geometry import Point, LineString
+import matplotlib.ticker as mticker
+from matplotlib.axes import Axes
 from alive_progress import alive_it
 from tools import bcolors
-import numpy as np
 import json
-import matplotlib.ticker as mticker
-import matplotlib.image as mpimg
+import warnings
+from typing import Dict, Union, List, Tuple, Type
 
 
-def prepare_plot(ax, pos, name, data):
-	total_count = sum(data.values())
-	# Calculate percentages
-	percentages = {key: (value / total_count) * 100 for key, value in data.items()}
+def prepare_plot(ax: Type[Axes], pos: Tuple[int, int], name: str, idx: int, data: Dict[int:int], color: Union[str, List[str]], xaxis_defalut: bool = True):
+    '''Prepares the plot for the schedule plot. Can plot a single district or the summary data.'''
 
-	# Plotting the percentages
-	
-	ax[pos].bar(percentages.keys(), percentages.values())
-	ax[pos].set_title(f"{name}", fontsize=8)
+    total_count = sum(data.values())
+    # Calculate percentages
+    percentages = sorted([(key, (value / total_count) * 100) for key, value in data.items()])
 
-	# Format y-axis tick labels as percentages
-	formatter = mticker.PercentFormatter()
-	ax[pos].yaxis.set_major_formatter(formatter)
+    # Axes
+    x_keys = [x[0] for x in percentages]
+    y_values = [x[1] for x in percentages]
 
-	# Set smaller font size for x and y labels
-	ax[pos].tick_params(axis='x', labelsize=4)
-	ax[pos].tick_params(axis='y', labelsize=4)
+    # Prepare the plot
+    ax[pos].bar(x_keys, y_values, width=1, color=color, edgecolor='black')
+    ax[pos].set_title(f"{name}", fontsize=12 if xaxis_defalut else 8)
 
-	# Set x-axis ticks to [0, 20, 40, 60]
-	ax[pos].set_xticks([0, 20, 40, 60])
- 
+    if (idx is not None):
+        ax[pos].text(1, 1.1, f"{idx}", transform=ax[pos].transAxes, ha='right', va='top')
+
+    # Format y-axis tick labels as percentages
+    formatter = mticker.PercentFormatter()
+    ax[pos].yaxis.set_major_formatter(formatter)
+
+    # Set font size for x and y labels
+    ax[pos].tick_params(axis='x', labelsize=6)
+    ax[pos].tick_params(axis='y', labelsize=6)
+
+    # Set x-axis ticks to [0, 20, 40, 60] or to district names
+    if (xaxis_defalut):
+        ax[pos].set_xticks(range(0, 61, 5))
+    else:
+        warnings.filterwarnings("ignore")
+        ax[pos].set_xticklabels(x_keys, rotation=45, ha='right', fontsize=4)
+        warnings.filterwarnings("default")
+
 
 def plot_data_set_schedule(dataSet: int = 1) -> None:
-	with open(f"./FILTERED_DATA/FILTERED_POSITIONS/filtered_positions_{dataSet}.json", "r") as file:
-		data = json.load(file)
-		
-	time_diffs = map(lambda x: (x[0] // 60, x[1]), map(lambda x: (x["Time"], x["District"]), data))
+    '''Plots the percentage of buses in each district of Warsaw that are delayed by a certain amount of time.'''
 
-	delay_per_district = dict()
-	delay_total = dict()
- 
-	for time_diff in time_diffs:
-		if (time_diff[1] not in delay_per_district):
-			delay_per_district[time_diff[1]] = dict()
-		delay_per_district[time_diff[1]][time_diff[0]] = delay_per_district[time_diff[1]].get(time_diff[0], 0) + 1
-		delay_total[time_diff[0]] = delay_total.get(time_diff[0], 0) + 1
+    # Colors for the plots
+    colors = ["blue", "green", "red", "cyan", "magenta", "yellow", "blueviolet", "hotpink", "orange", "coral", "mediumspringgreen", "royalblue", "orangered", "lime", "khaki", "turquoise", "darkorange", "aquamarine", "dodgerblue"]
 
+    # Load the filtered positions from the file
+    with open(f"./FILTERED_DATA/FILTERED_POSITIONS/filtered_positions_{dataSet}.json", "r") as file:
+        data = json.load(file)
 
-	fig, ax = plt.subplots(4, 5, gridspec_kw={'hspace': 0.5})
-	fig.suptitle('Opóźnienia w Warszawie w poszczególnych dzielnicach')
-	
+    # Calculate the time differences between the scheduled and actual bus times
+    time_diffs = map(lambda x: ((x[0] // 60), x[1]), map(lambda x: (x["Time"], x["District"]), data))
 
-	plt.get_current_fig_manager().full_screen_toggle()
- 
-	positions = [(0, i) for i in range(5)] + [(i, j) for i in range(1, 3) for j in (0, 1, 3, 4)] + [(3, i) for i in range(5)]
-	idx = 0
+    delay_per_district = dict()
+    delay_total = dict()
+    district_counter = dict()
 
-	for district in list(sorted(delay_per_district.keys())):
-		prepare_plot(ax, positions[idx], district, delay_per_district[district])
-		idx += 1
+    # Count the number of buses in each district and the number of buses delayed by a certain amount of time
+    for time_diff in alive_it(time_diffs, title=bcolors.OKCYAN + "Filtering points..." + bcolors.ENDC):
+        if (time_diff[1] not in delay_per_district):
+            delay_per_district[time_diff[1]] = dict()
+        delay_per_district[time_diff[1]][time_diff[0]] = delay_per_district[time_diff[1]].get(time_diff[0], 0) + 1
+        delay_total[time_diff[0]] = delay_total.get(time_diff[0], 0) + 1
+        district_counter[time_diff[1]] = district_counter.get(time_diff[1], 0) + 1
 
-	img = mpimg.imread('bus.webp')
-	ax[2, 2].imshow(img)
-	ax[2, 2].axis('off')
-	
-	prepare_plot(ax, (1, 2), "WARSZAWA", delay_total)
+    # Create the plot
+    fig, ax = plt.subplots(4, 5, gridspec_kw={'hspace': 0.5})
+    fig.suptitle('Niezgodności w rozkładzie jazdy autobusów w Warszawie i jej dzielnicach.', fontsize=25)
+    fig.supxlabel('Czas opóźnienia [minuty]', fontsize=12)
+    fig.supylabel('Procent autobusów', fontsize=12)
 
-	plt.show()
+    # Prepare the plot - plot districts in correct subplots
+    positions = [(0, i) for i in range(5)] + [(i, j) for i in range(1, 3) for j in (0, 1, 3, 4)] + [(3, i) for i in range(5)]
+    idx = 0
 
+    # Plot the data
+    print(bcolors.OKBLUE + "Plotting..." + bcolors.ENDC)
+    for district in list(sorted(delay_per_district.keys())):
+        prepare_plot(ax, positions[idx], district, idx + 1, delay_per_district[district], colors[idx])
+        idx += 1
 
-plot_data_set_schedule(2)    
-        
-    
+    # plot summary data
+    prepare_plot(ax, (1, 2), "WARSZAWA", None, delay_total, colors[idx])
+    prepare_plot(ax, (2, 2), "Procent autobusów wg dzielnic", None, district_counter, colors, False)
+
+    plt.get_current_fig_manager().full_screen_toggle()
+    plt.savefig(f"./PLOTS/schedule_plot_{dataSet}.png")
+    # plt.show()

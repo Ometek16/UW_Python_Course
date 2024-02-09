@@ -1,73 +1,78 @@
-import os
 import json
 from datetime import datetime
 from tools import calculate_distance, bcolors
-from typing import Dict, List
-from alive_progress import alive_bar, alive_it
-from shapely.geometry import Point
+from alive_progress import alive_it
+
+
+DELTA_DISTANCE = 50
 
 
 def filter_positions(dataSet: int = 1) -> None:
-    
-    file_busStops = f"SCHEDULE/busStops.json"
+    '''Filter positions of buses which are around bus stops.'''
+
+    # Load bus stops
+    file_busStops = "SCHEDULE/busStops.json"
     with open(file_busStops, 'r') as file:
         busStops = json.load(file)
-    
-    
+
+    # Load valid positions
     file_path = f"./FILTERED_DATA/VALID_POSITIONS/valid_positions_{dataSet}.json"
     with open(file_path, 'r') as file:
         valid_positions = json.load(file)
-        
+
     filtered_positions = []
-    
-    for bus in alive_it(valid_positions, title=bcolors.OKCYAN+ "Filering positions..." + bcolors.ENDC, spinner='dots'):
+
+    # Filter positions
+    for bus in alive_it(valid_positions, title=bcolors.OKCYAN + "Filering positions..." + bcolors.ENDC, spinner='dots'):
+        # Load bus possible positions (some lines do not exist in the schedule, so we need to handle this case)
         try:
             file_bus_positions = f"SCHEDULE/LINES/line_{bus["Line"]}.json"
             with open(file_bus_positions, 'r') as file:
                 bus_positions = json.load(file)
-        except:
-            print(bcolors.WARNING + f"[ERROR] Line {bus["Line"]} does not exist." + bcolors.ENDC)
+        except Exception:
             continue
 
-        # Bus does not exist in the schedule :)
+        # Some brigades do not exist in the schedule, so we need to handle this case
         if (bus["Brigade"] not in bus_positions):
             continue
-        
+
         # If a bus is over 1h late, it is not considered, as it is probably wrong
         bestTime = 3600
-        
+
         bus_time = datetime.strptime(bus["Time"], "%Y-%m-%d %H:%M:%S").strftime("%H:%M:%S")
 
+        # Find best busStop for bus
         for busStop in bus_positions[bus["Brigade"]]:
             # Bus stop does not exist :)
             if busStop not in busStops:
                 continue
-            
+
             busStopPosition = (float(busStops[busStop]["dlug_geo"]), float(busStops[busStop]["szer_geo"]))
-            
+
             distance = calculate_distance(bus["Position"], busStopPosition)
-            
-            # To hard to check if bus is around any bus stop
-            if (distance > 50):
+
+            # The bus is not close enough to the bus stop
+            if (distance > DELTA_DISTANCE):
                 continue
-            
+
+            # Find best time for bus
             for curr_time in bus_positions[bus["Brigade"]][busStop]:
+                # Time parsing correction :)
                 if (int(curr_time[:2]) >= 24):
                     curr_time = str(int(curr_time[:2]) - 24) + curr_time[2:]
                 time_diff = abs((datetime.strptime(curr_time, "%H:%M:%S") - datetime.strptime(bus_time, "%H:%M:%S")).seconds)
-                
+
                 bestTime = min(bestTime, time_diff)
-            
+
+            # If the bus is over 1h late, it is not considered, as it is probably wrong
             if (bestTime >= 3600):
                 continue
-            
+
+            # Save the best time for the bus
             bus["Time"] = bestTime
             filtered_positions.append(bus)
-            
+
+    # Save the filtered positions
+    print(bcolors.OKBLUE + "Saving data..." + bcolors.ENDC)
     with open(f"./FILTERED_DATA/FILTERED_POSITIONS/filtered_positions_{dataSet}.json", "w") as file:
         json.dump(filtered_positions, file)
-                
- 
-filter_positions(2)
-    
-    
