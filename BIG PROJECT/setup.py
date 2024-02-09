@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="UTF-8") as fh:
     long_description = fh.read()
     
 setuptools.setup(
-    name="BusProjectUW",
+    name="BusProjectUW_KO",
 	version="0.0.1",
 	author="Kuba Ornatek",
 	author_email="kuba.ornatek@gmail.com",

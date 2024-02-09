@@ -26,6 +26,17 @@ dataSet = collect_all(path, api_key)
 analyse_all(path, dataSet)
 ```
 
+```python
+from collect_current_positions import collect_current_positions
+from analyse import analyse_all
+
+api_key = "your_api_key"  # API key for UM API
+path = os.getcwd()
+
+dataSet = collect_current_positions(path, api_key)
+analyse_all(path, dataSet)
+```
+
 # Documentation
 
 ## collect.py
